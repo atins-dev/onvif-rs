@@ -422,7 +422,22 @@ pub struct GetConfiguration {
 
 impl Validate for GetConfiguration {}
 
-pub type GetVideoEncoderConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetVideoEncoderConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetVideoEncoderConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -437,7 +452,22 @@ pub struct GetVideoEncoderConfigurationsResponse {
 
 impl Validate for GetVideoEncoderConfigurationsResponse {}
 
-pub type GetVideoSourceConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetVideoSourceConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetVideoSourceConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -452,7 +482,22 @@ pub struct GetVideoSourceConfigurationsResponse {
 
 impl Validate for GetVideoSourceConfigurationsResponse {}
 
-pub type GetAudioEncoderConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioEncoderConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioEncoderConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -467,7 +512,22 @@ pub struct GetAudioEncoderConfigurationsResponse {
 
 impl Validate for GetAudioEncoderConfigurationsResponse {}
 
-pub type GetAudioSourceConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioSourceConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioSourceConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -482,7 +542,22 @@ pub struct GetAudioSourceConfigurationsResponse {
 
 impl Validate for GetAudioSourceConfigurationsResponse {}
 
-pub type GetAnalyticsConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAnalyticsConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAnalyticsConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -497,7 +572,22 @@ pub struct GetAnalyticsConfigurationsResponse {
 
 impl Validate for GetAnalyticsConfigurationsResponse {}
 
-pub type GetMetadataConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetMetadataConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetMetadataConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -512,7 +602,22 @@ pub struct GetMetadataConfigurationsResponse {
 
 impl Validate for GetMetadataConfigurationsResponse {}
 
-pub type GetAudioOutputConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioOutputConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioOutputConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -527,7 +632,22 @@ pub struct GetAudioOutputConfigurationsResponse {
 
 impl Validate for GetAudioOutputConfigurationsResponse {}
 
-pub type GetAudioDecoderConfigurations = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioDecoderConfigurations {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioDecoderConfigurations {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -662,7 +782,23 @@ pub struct SetAudioDecoderConfiguration {
 impl Validate for SetAudioDecoderConfiguration {}
 
 pub type SetAudioDecoderConfigurationResponse = SetConfigurationResponse;
-pub type GetVideoSourceConfigurationOptions = GetConfiguration;
+
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetVideoSourceConfigurationOptions {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetVideoSourceConfigurationOptions {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -681,7 +817,22 @@ pub struct GetVideoSourceConfigurationOptionsResponse {
 
 impl Validate for GetVideoSourceConfigurationOptionsResponse {}
 
-pub type GetVideoEncoderConfigurationOptions = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetVideoEncoderConfigurationOptions {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetVideoEncoderConfigurationOptions {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -695,7 +846,22 @@ pub struct GetVideoEncoderConfigurationOptionsResponse {
 
 impl Validate for GetVideoEncoderConfigurationOptionsResponse {}
 
-pub type GetAudioSourceConfigurationOptions = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioSourceConfigurationOptions {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioSourceConfigurationOptions {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -714,7 +880,22 @@ pub struct GetAudioSourceConfigurationOptionsResponse {
 
 impl Validate for GetAudioSourceConfigurationOptionsResponse {}
 
-pub type GetAudioEncoderConfigurationOptions = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioEncoderConfigurationOptions {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioEncoderConfigurationOptions {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -733,7 +914,22 @@ pub struct GetAudioEncoderConfigurationOptionsResponse {
 
 impl Validate for GetAudioEncoderConfigurationOptionsResponse {}
 
-pub type GetMetadataConfigurationOptions = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetMetadataConfigurationOptions {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetMetadataConfigurationOptions {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -752,7 +948,22 @@ pub struct GetMetadataConfigurationOptionsResponse {
 
 impl Validate for GetMetadataConfigurationOptionsResponse {}
 
-pub type GetAudioOutputConfigurationOptions = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioOutputConfigurationOptions {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioOutputConfigurationOptions {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -771,7 +982,22 @@ pub struct GetAudioOutputConfigurationOptionsResponse {
 
 impl Validate for GetAudioOutputConfigurationOptionsResponse {}
 
-pub type GetAudioDecoderConfigurationOptions = GetConfiguration;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
+pub struct GetAudioDecoderConfigurationOptions {
+    // Token of the requested configuration.
+    #[yaserde(prefix = "tr2", rename = "ConfigurationToken")]
+    pub configuration_token: Option<tt::ReferenceToken>,
+
+    // Contains the token of an existing media profile the configurations shall
+    // be compatible with.
+    #[yaserde(prefix = "tr2", rename = "ProfileToken")]
+    pub profile_token: Option<tt::ReferenceToken>,
+}
+impl Validate for GetAudioDecoderConfigurationOptions {}
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
