@@ -7,7 +7,7 @@ use xsd_types::types as xs;
 // Tokens should be assigned such that they are unique within a device. Tokens
 // must be at least unique within its class.
 // Length up to 64 characters.
-#[derive(Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
+#[derive(Clone, Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
 pub struct ReferenceToken(pub String);
 
 impl Validate for ReferenceToken {
@@ -23,7 +23,7 @@ impl Validate for ReferenceToken {
 }
 
 // Range of values greater equal Min value and less equal Max value.
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct IntRange {
     #[yaserde(prefix = "tt", rename = "Min")]
