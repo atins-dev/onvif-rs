@@ -17,7 +17,7 @@ pub struct DeviceEntity {
 impl Validate for DeviceEntity {}
 
 // User readable name. Length up to 64 characters.
-#[derive(Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
+#[derive(Clone, Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
 pub struct Name(pub String);
 
 impl Validate for Name {
@@ -1101,7 +1101,7 @@ impl Default for VideoEncodingProfiles {
 
 impl Validate for VideoEncodingProfiles {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct VideoEncoder2Configuration {
     // Video Media Subtype for the video format. For definitions see
@@ -1162,7 +1162,7 @@ pub struct VideoEncoder2Configuration {
 
 impl Validate for VideoEncoder2Configuration {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct VideoResolution2 {
     // Number of the columns of the Video image.
@@ -1176,7 +1176,7 @@ pub struct VideoResolution2 {
 
 impl Validate for VideoResolution2 {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct VideoRateControl2 {
     // Desired frame rate in fps. The actual rate may be lower due to e.g.
@@ -1982,7 +1982,7 @@ pub struct AudioDecoderConfigurationOptionsExtension {}
 
 impl Validate for AudioDecoderConfigurationOptionsExtension {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct MulticastConfiguration {
     // The multicast address (if this address is set to 0 no multicast streaming
@@ -2515,7 +2515,7 @@ pub struct NetworkHostExtension {}
 
 impl Validate for NetworkHostExtension {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct Ipaddress {
     // Indicates if the address is an IPv4 or IPv6 address.
@@ -2547,7 +2547,7 @@ pub struct PrefixedIPv4Address {
 
 impl Validate for PrefixedIPv4Address {}
 
-#[derive(Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
+#[derive(Clone, Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
 pub struct Ipv4Address(pub String);
 
 impl Validate for Ipv4Address {}
@@ -2566,7 +2566,7 @@ pub struct PrefixedIPv6Address {
 
 impl Validate for PrefixedIPv6Address {}
 
-#[derive(Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
+#[derive(Clone, Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
 pub struct Ipv6Address(pub String);
 
 impl Validate for Ipv6Address {}
@@ -2576,7 +2576,7 @@ pub struct HwAddress(pub String);
 
 impl Validate for HwAddress {}
 
-#[derive(PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub enum Iptype {
     #[yaserde(rename = "IPv4")]
