@@ -48,6 +48,7 @@ impl ClientBuilder {
                 credentials: None,
                 auth_type: AuthType::Any,
                 timeout: Duration::from_secs(5),
+                address_to: None,
             },
         }
     }
@@ -96,6 +97,7 @@ struct Config {
     credentials: Option<Credentials>,
     auth_type: AuthType,
     timeout: Duration,
+    address_to: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -187,12 +189,15 @@ impl Client {
             "About to make request. auth_type={:?}, redirections={}", auth_type, redirections
         );
 
-        let soap_msg = soap::soap(message, &username_token)
-            .map_err(|e| Error::Protocol(format!("{:?}", e)))?;
-
+        let address_to = self.config.address_to.clone();
+        let url = if let Some(address_to) = &address_to {
+            address_to
+        } else {
+            uri.as_str()
+        };
         let mut request = self
             .client
-            .post(uri.as_str())
+            .post(url)
             .header("Content-Type", "application/soap+xml; charset=utf-8;");
 
         if let RequestAuthType::Digest(digest) = auth_type {
@@ -203,6 +208,8 @@ impl Client {
             debug!(self, "Digest headers added");
         }
 
+        let soap_msg = soap::soap(message, &username_token, address_to)
+            .map_err(|e| Error::Protocol(format!("{:?}", e)))?;
         debug!(self, "Request body: {}", soap_msg);
 
         let response = request.body(soap_msg).send().await.map_err(|e| match e {
@@ -283,5 +290,9 @@ impl Client {
             .credentials
             .as_ref()
             .map(|c| UsernameToken::new(&c.username, &c.password))
+    }
+
+    pub fn set_address_to(&mut self, address_to: Option<String>) {
+        self.config.address_to = address_to;
     }
 }

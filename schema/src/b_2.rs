@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 pub use crate::common::*;
 use crate::{t_1 as wstop, validate::Validate, ws_addr as wsa};
 use macro_utils::*;
@@ -46,17 +48,59 @@ pub struct SubscriptionPolicyType {}
 impl Validate for SubscriptionPolicyType {}
 
 pub type TopicExpression = TopicExpressionType;
-// pub type FixedTopicSet = bool;
-// pub type TopicExpressionDialect = String;
 
-// TODO: replace FixedTopicSet and TopicExpressionDialect with actual types generated from .xsd
+#[derive(PartialEq, PartialOrd, Debug, UtilsDefaultSerde)]
+pub struct FixedTopicSet {
+    value: bool,
+}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
-pub struct FixedTopicSet {}
+impl Default for FixedTopicSet {
+    fn default() -> FixedTopicSet {
+        Self { value: false }
+    }
+}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
-pub struct TopicExpressionDialect {}
+impl FromStr for FixedTopicSet {
+    type Err = std::str::ParseBoolError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let value = FromStr::from_str(s)?;
+        Ok(Self { value })
+    }
+}
 
+impl std::fmt::Display for FixedTopicSet {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+#[derive(PartialEq, PartialOrd, Debug, UtilsDefaultSerde)]
+pub struct TopicExpressionDialect {
+    value: String,
+}
+
+impl Default for TopicExpressionDialect {
+    fn default() -> TopicExpressionDialect {
+        Self {
+            value: "".to_string(),
+        }
+    }
+}
+
+impl FromStr for TopicExpressionDialect {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            value: s.to_string(),
+        })
+    }
+}
+
+impl std::fmt::Display for TopicExpressionDialect {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
     prefix = "wsnt",
@@ -140,7 +184,25 @@ pub mod notification_message_holder_type {
     impl Validate for MessageType {}
 }
 
-pub type NotificationMessage = NotificationMessageHolderType;
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "wsnt",
+    namespace = "wsnt: http://docs.oasis-open.org/wsn/b-2"
+)]
+pub struct NotificationMessage {
+    #[yaserde(prefix = "wsnt", rename = "SubscriptionReference")]
+    pub subscription_reference: SubscriptionReference,
+
+    #[yaserde(prefix = "wsnt", rename = "Topic")]
+    pub topic: Topic,
+
+    #[yaserde(prefix = "wsnt", rename = "ProducerReference")]
+    pub producer_reference: ProducerReference,
+
+    #[yaserde(prefix = "wsnt", rename = "Message")]
+    pub message: notification_message_holder_type::MessageType,
+}
+
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
     prefix = "wsnt",

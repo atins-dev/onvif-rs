@@ -11,7 +11,7 @@ const SOAP_URI: &str = "http://www.w3.org/2003/05/soap-envelope";
 
 #[derive(Debug)]
 pub enum Error {
-    ParseError,
+    ParseError(xmltree::ParseError),
     EnvelopeNotFound,
     BodyNotFound,
     BodyIsEmpty,
@@ -24,26 +24,53 @@ pub struct Response {
     pub response: Option<String>,
 }
 
-pub fn soap(xml: &str, username_token: &Option<UsernameToken>) -> Result<String, Error> {
+pub fn soap(
+    xml: &str,
+    username_token: &Option<UsernameToken>,
+    address_to: Option<String>,
+) -> Result<String, Error> {
+    let soap_prefix = "s";
     let app_data = parse(xml)?;
 
     let mut namespaces = app_data.namespaces.clone().unwrap_or_else(Namespace::empty);
-    namespaces.put("s", SOAP_URI);
+    namespaces.put(soap_prefix, SOAP_URI);
+    if address_to.is_some() {
+        namespaces.put("wsa", "http://www.w3.org/2005/08/addressing");
+    }
 
     let mut body = Element::new("Body");
-    body.prefix = Some("s".to_string());
+    body.prefix = Some(soap_prefix.to_string());
     body.children.push(XMLNode::Element(app_data));
 
     let mut envelope = Element::new("Envelope");
     envelope.namespaces = Some(namespaces);
-    envelope.prefix = Some("s".to_string());
+    envelope.prefix = Some(soap_prefix.to_string());
 
+    let mut header_elements: Vec<Element> = Vec::new();
     if let Some(username_token) = username_token {
+        header_elements.push(parse(&username_token.to_xml())?);
+    }
+    if let Some(address_to) = address_to {
+        let mut element_to = parse(&format!(
+            r##"<?xml version="1.0" encoding="UTF-8"?>
+                <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">{}</wsa:To>"##,
+            address_to
+        ))?;
+        element_to.attributes.insert(
+            format!("{}:mustUnderstand", soap_prefix),
+            "true".to_string(),
+        );
+        header_elements.push(element_to);
+    }
+
+    if !header_elements.is_empty() {
         let mut header = Element::new("Header");
-        header.prefix = Some("s".to_string());
-        header
-            .children
-            .push(XMLNode::Element(parse(&username_token.to_xml())?));
+        header.prefix = Some(soap_prefix.to_string());
+
+        header_elements
+            .iter()
+            .for_each(|element| header.children.push(XMLNode::Element(element.clone())));
+
         envelope.children.push(XMLNode::Element(header));
     }
 
@@ -76,7 +103,7 @@ pub fn unsoap(xml: &str) -> Result<String, Error> {
 }
 
 fn parse(xml: &str) -> Result<Element, Error> {
-    Element::parse(xml.as_bytes()).map_err(|_| Error::ParseError)
+    Element::parse(xml.as_bytes()).map_err(|x| Error::ParseError(x))
 }
 
 fn xml_element_to_string(el: &Element) -> Result<String, Error> {
