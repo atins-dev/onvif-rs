@@ -83,14 +83,34 @@ pub type From = EndpointReferenceType;
 pub type FaultTo = EndpointReferenceType;
 pub type To = AttributedURIType;
 pub type Action = AttributedURIType;
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
-#[yaserde(
-    prefix = "tns",
-    namespace = "tns: http://www.w3.org/2005/08/addressing"
-)]
-pub struct AttributedURIType {}
 
-impl Validate for AttributedURIType {}
+#[derive(PartialEq, PartialOrd, Debug, UtilsDefaultSerde)]
+pub struct AttributedURIType {
+    pub value: String,
+}
+
+impl Default for AttributedURIType {
+    fn default() -> AttributedURIType {
+        Self {
+            value: "".to_string(),
+        }
+    }
+}
+
+impl FromStr for AttributedURIType {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            value: s.to_string(),
+        })
+    }
+}
+
+impl std::fmt::Display for AttributedURIType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
 
 pub type IsReferenceParameter = bool;
 #[derive(PartialEq, Debug, UtilsUnionSerDe)]

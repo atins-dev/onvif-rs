@@ -24,7 +24,7 @@ fn test_soap() {
         </s:Envelope>
         "#;
 
-    let actual = soap(app_data, &None).unwrap();
+    let actual = soap(app_data, &None, None).unwrap();
 
     println!("{}", actual);
     println!("{}", expected);
