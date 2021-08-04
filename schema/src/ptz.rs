@@ -431,8 +431,6 @@ impl Validate for SetHomePositionResponse {}
     prefix = "tptz",
     namespace = "tptz: http://www.onvif.org/ver20/ptz/wsdl"
 )]
-#[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
-
 pub struct ContinuousMove {
     // A reference to the MediaProfile.
     #[yaserde(prefix = "tptz", rename = "ProfileToken")]
