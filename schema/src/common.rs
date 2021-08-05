@@ -35,7 +35,7 @@ pub struct IntRange {
 
 impl Validate for IntRange {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct Vector2D {
     #[yaserde(attribute, rename = "x")]
@@ -51,7 +51,7 @@ pub struct Vector2D {
 
 impl Validate for Vector2D {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct Vector1D {
     #[yaserde(attribute, rename = "x")]
@@ -64,7 +64,7 @@ pub struct Vector1D {
 
 impl Validate for Vector1D {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct Ptzvector {
     // Pan and tilt position. The x component corresponds to pan and the y
