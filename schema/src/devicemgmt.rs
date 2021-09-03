@@ -370,7 +370,7 @@ pub struct GetDeviceInformation {}
 
 impl Validate for GetDeviceInformation {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
     prefix = "tds",
     namespace = "tds: http://www.onvif.org/ver10/device/wsdl"
