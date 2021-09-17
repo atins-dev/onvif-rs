@@ -72,6 +72,7 @@ impl ClientBuilder {
         #[allow(unused_mut)]
         let mut client_builder = reqwest::Client::builder()
             .redirect(reqwest::redirect::Policy::none())
+            .http1_title_case_headers()
             .timeout(self.config.timeout);
 
         #[cfg(feature = "tls")]
