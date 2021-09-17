@@ -49,6 +49,7 @@ impl ClientBuilder {
                 auth_type: AuthType::Any,
                 timeout: Duration::from_secs(5),
                 address_to: None,
+                action: None,
             },
         }
     }
@@ -99,6 +100,7 @@ struct Config {
     auth_type: AuthType,
     timeout: Duration,
     address_to: Option<String>,
+    action: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -209,8 +211,13 @@ impl Client {
             debug!(self, "Digest headers added");
         }
 
-        let soap_msg = soap::soap(message, &username_token, address_to)
-            .map_err(|e| Error::Protocol(format!("{:?}", e)))?;
+        let soap_msg = soap::soap(
+            message,
+            &username_token,
+            address_to,
+            self.config.action.clone(),
+        )
+        .map_err(|e| Error::Protocol(format!("{:?}", e)))?;
         debug!(self, "Request body: {}", soap_msg);
 
         let response = request.body(soap_msg).send().await.map_err(|e| match e {
@@ -295,5 +302,9 @@ impl Client {
 
     pub fn set_address_to(&mut self, address_to: Option<String>) {
         self.config.address_to = address_to;
+    }
+
+    pub fn set_action(&mut self, action: Option<String>) {
+        self.config.action = action;
     }
 }
