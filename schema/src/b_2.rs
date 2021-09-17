@@ -179,7 +179,10 @@ pub mod notification_message_holder_type {
         prefix = "wsnt",
         namespace = "wsnt: http://docs.oasis-open.org/wsn/b-2"
     )]
-    pub struct MessageType {}
+    pub struct MessageType {
+        #[yaserde(prefix = "tt", rename = "Message")]
+        pub message: crate::onvif::Message,
+    }
 
     impl Validate for MessageType {}
 }
