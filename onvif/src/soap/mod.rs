@@ -28,13 +28,14 @@ pub fn soap(
     xml: &str,
     username_token: &Option<UsernameToken>,
     address_to: Option<String>,
+    action: Option<String>,
 ) -> Result<String, Error> {
     let soap_prefix = "s";
     let app_data = parse(xml)?;
 
     let mut namespaces = app_data.namespaces.clone().unwrap_or_else(Namespace::empty);
     namespaces.put(soap_prefix, SOAP_URI);
-    if address_to.is_some() {
+    if address_to.is_some() || action.is_some() {
         namespaces.put("wsa", "http://www.w3.org/2005/08/addressing");
     }
 
@@ -55,6 +56,18 @@ pub fn soap(
             r##"<?xml version="1.0" encoding="UTF-8"?>
                 <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">{}</wsa:To>"##,
             address_to
+        ))?;
+        element_to.attributes.insert(
+            format!("{}:mustUnderstand", soap_prefix),
+            "true".to_string(),
+        );
+        header_elements.push(element_to);
+    }
+    if let Some(action) = action {
+        let mut element_to = parse(&format!(
+            r##"<?xml version="1.0" encoding="UTF-8"?>
+                <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">{}</wsa:Action>"##,
+            action
         ))?;
         element_to.attributes.insert(
             format!("{}:mustUnderstand", soap_prefix),
