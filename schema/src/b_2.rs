@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 pub use crate::common::*;
-use crate::{t_1 as wstop, validate::Validate, ws_addr as wsa};
+use crate::{t_1 as wstop, transport, validate::Validate, ws_addr as wsa};
 use xsd_macro_utils::*;
 use xsd_types::types as xs;
 
@@ -684,3 +684,10 @@ pub struct ResumeFailedFaultType {}
 impl Validate for ResumeFailedFaultType {}
 
 pub type ResumeFailedFault = ResumeFailedFaultType;
+
+pub async fn renew<T: transport::Transport>(
+    transport: &T,
+    request: &Renew,
+) -> Result<RenewResponse, transport::Error> {
+    transport::request(transport, request).await
+}
