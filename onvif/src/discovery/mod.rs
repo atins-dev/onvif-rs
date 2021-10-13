@@ -10,11 +10,13 @@ use std::{
     future::Future,
     iter,
     net::{IpAddr, Ipv4Addr, SocketAddr},
+    sync::Arc,
 };
 use thiserror::Error;
 use tokio::{
     io,
     net::UdpSocket,
+    sync::Mutex,
     time::{self, Duration, Instant},
 };
 use tracing::debug;
@@ -113,6 +115,8 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
         let probe = &probe;
         let socket = &socket;
 
+        let device_list: Arc<Mutex<Vec<Device>>> = Arc::new(Mutex::new(Vec::new()));
+
         let start = Instant::now();
         loop {
             let elapsed = start.elapsed();
@@ -134,7 +138,11 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
             };
 
             if let Some(item) = try_produce_item.await {
-                yield item;
+                let mut device_list = device_list.lock().await;
+                if device_list.iter().find(|device| *device == &item).is_none() {
+                    device_list.push(item.clone());
+                    yield item;
+                }
             }
         }
     })
