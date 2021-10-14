@@ -200,7 +200,12 @@ fn build_probe() -> probe::Envelope {
             action: "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe".into(),
             to: "urn:schemas-xmlsoap-org:ws:2005:04:discovery".into(),
         },
-        ..Default::default()
+        body: Body {
+            probe: Probe {
+                types: "dn:NetworkVideoTransmitter".into(),
+                scopes: "".into(),
+            }
+        },
     }
 }
 
