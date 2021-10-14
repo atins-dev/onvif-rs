@@ -1,7 +1,7 @@
 use crate::soap;
 use async_stream::stream;
 use futures_core::stream::Stream;
-use futures_util::{future::ready, stream::FuturesUnordered, StreamExt};
+use futures_util::{future::ready, stream::FuturesOrdered, StreamExt};
 use schema::{
     transport::Error as TransportError,
     ws_discovery::{probe, probe_matches},
@@ -127,17 +127,25 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
             let timeout = duration - elapsed;
 
             // Separate async block to be able to short-circuit on `None`.
-            let try_produce_item = async move {
-                let xml = recv_string(socket, timeout).await.ok()?;
+            let try_produce_items = async move {
+                let xml = match recv_string(socket, timeout).await {
+                    Ok(xml) => xml,
+                    Err(_) => return Vec::new(),
+                };
                 debug!("Probe match XML: {}", xml);
-                let envelope = yaserde::de::from_str::<probe_matches::Envelope>(&xml).ok()?;
+                let envelope = match yaserde::de::from_str::<probe_matches::Envelope>(&xml) {
+                    Ok(envelope) => envelope,
+                    Err(_) => return Vec::new(),
+                };
                 if envelope.header.relates_to != probe.header.message_id {
-                    return None;
+                    return Vec::new();
                 }
                 get_responding_addr(envelope, is_addr_responding).await
-            };
+            }
+            .await;
 
-            if let Some(item) = try_produce_item.await {
+            for item in try_produce_items.into_iter()
+            {
                 let mut device_list = device_list.lock().await;
                 if device_list.iter().find(|device| *device == &item).is_none() {
                     device_list.push(item.clone());
@@ -158,7 +166,7 @@ async fn recv_string(s: &UdpSocket, timeout: Duration) -> io::Result<String> {
 async fn get_responding_addr<F, Fut>(
     envelope: probe_matches::Envelope,
     check_addr: F,
-) -> Option<Device>
+) -> Vec<Device>
 where
     F: Fn(Url) -> Fut + Copy,
     Fut: Future<Output = bool>,
@@ -177,6 +185,7 @@ where
             probe_match
                 .x_addrs()
                 .into_iter()
+                .filter(|url| !url.as_str().contains("169.254")) //NOTE: exclude private IP address from device
                 .zip(iter::repeat(probe_match.name()))
         })
         .map(|(url, name)| async move {
@@ -185,9 +194,9 @@ where
                 Device { name, url }
             })
         })
-        .collect::<FuturesUnordered<_>>()
+        .collect::<FuturesOrdered<_>>()
         .filter_map(ready)
-        .next()
+        .collect::<Vec<Device>>()
         .await
 }
 
@@ -204,7 +213,7 @@ fn build_probe() -> probe::Envelope {
             probe: Probe {
                 types: "dn:NetworkVideoTransmitter".into(),
                 scopes: "".into(),
-            }
+            },
         },
     }
 }
@@ -276,7 +285,7 @@ fn test_xaddrs_extraction() {
         .iter()
         .filter_map(|xml| yaserde::de::from_str::<probe_matches::Envelope>(xml).ok())
         .filter(|envelope| envelope.header.relates_to == our_uuid)
-        .filter_map(|envelope| {
+        .flat_map(|envelope| {
             tokio::runtime::Runtime::new()
                 .unwrap()
                 .block_on(get_responding_addr(envelope, is_addr_responding))
