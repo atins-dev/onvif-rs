@@ -239,7 +239,12 @@ impl Client {
                 .map_err(|e| Error::Protocol(e.to_string()))
                 .and_then(|text| {
                     debug!(self, "Response body: {}", text);
-                    soap::unsoap(&text).map_err(|e| Error::Protocol(format!("{:?}", e)))
+                    soap::unsoap(&text).map_err(|e| match e {
+                        soap::Error::Fault(f) if f.is_unauthorized() => {
+                            Error::Authorization("Unauthorized".to_string())
+                        }
+                        _ => Error::Protocol(format!("{:?}", e)),
+                    })
                 })
         } else if status == reqwest::StatusCode::UNAUTHORIZED {
             match auth_type {
