@@ -706,7 +706,7 @@ pub struct VideoEncoderConfiguration {
 
 impl Validate for VideoEncoderConfiguration {}
 
-#[derive(PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub enum VideoEncoding {
     #[yaserde(rename = "JPEG")]
@@ -725,7 +725,18 @@ impl Default for VideoEncoding {
 
 impl Validate for VideoEncoding {}
 
-#[derive(PartialEq, Debug, YaSerialize, YaDeserialize)]
+impl<T: AsRef<str>> From<T> for VideoEncoding {
+    fn from(encoding: T) -> Self {
+        match encoding.as_ref().to_uppercase().as_ref() {
+            "JPEG" => Self::Jpeg,
+            "MPEG4" => Self::Mpeg4,
+            "H264" => Self::H264,
+            x => Self::__Unknown__(x.into()),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub enum Mpeg4Profile {
     #[yaserde(rename = "SP")]
@@ -743,7 +754,7 @@ impl Default for Mpeg4Profile {
 
 impl Validate for Mpeg4Profile {}
 
-#[derive(PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub enum H264Profile {
     Baseline,
@@ -761,7 +772,7 @@ impl Default for H264Profile {
 
 impl Validate for H264Profile {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct VideoResolution {
     // Number of the columns of the Video image.
@@ -775,7 +786,7 @@ pub struct VideoResolution {
 
 impl Validate for VideoResolution {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct VideoRateControl {
     // Maximum output framerate in fps. If an EncodingInterval is provided the
@@ -796,7 +807,7 @@ pub struct VideoRateControl {
 
 impl Validate for VideoRateControl {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct Mpeg4Configuration {
     // Determines the interval in which the I-Frames will be coded. An entry of
@@ -814,7 +825,7 @@ pub struct Mpeg4Configuration {
 
 impl Validate for Mpeg4Configuration {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct H264Configuration {
     // Group of Video frames length. Determines typically the interval in which
