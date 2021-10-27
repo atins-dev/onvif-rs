@@ -2475,6 +2475,17 @@ impl Default for NetworkProtocolType {
 
 impl Validate for NetworkProtocolType {}
 
+impl<T: AsRef<str>> From<T> for NetworkProtocolType {
+    fn from(protocol_type: T) -> Self {
+        match protocol_type.as_ref().to_uppercase().as_ref() {
+            "HTTP" => Self::Http,
+            "HTTPS" => Self::Https,
+            "RTSP" => Self::Rtsp,
+            x => Self::__Unknown__(x.into()),
+        }
+    }
+}
+
 #[derive(PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub enum NetworkHostType {
