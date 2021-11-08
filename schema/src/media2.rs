@@ -1110,7 +1110,7 @@ pub struct GetStreamUri {
     // Defines the network protocol for streaming as defined by
     // tr2:TransportProtocol
     #[yaserde(prefix = "tr2", rename = "Protocol")]
-    pub protocol: String,
+    pub protocol: TransportProtocol,
 
     // The ProfileToken element indicates the media profile to use and will
     // define the configuration of the content of the stream.
