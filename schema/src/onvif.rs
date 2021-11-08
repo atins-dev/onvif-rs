@@ -2071,7 +2071,7 @@ pub struct Transport {
 
 impl Validate for Transport {}
 
-#[derive(PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Clone, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub enum TransportProtocol {
     #[yaserde(rename = "UDP")]
