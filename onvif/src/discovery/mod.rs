@@ -87,8 +87,10 @@ pub struct Device {
 /// };
 /// ```
 pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, Error> {
-    let probe = build_probe();
+    let probe = build_probe("tds:Device");
+    let probe_extra = build_probe("dn:NetworkVideoTransmitter");
     let probe_xml = yaserde::ser::to_string(&probe).map_err(Error::Serde)?;
+    let probe_xml_extra = yaserde::ser::to_string(&probe_extra).map_err(Error::Serde)?;
 
     debug!("Probe XML: {}", probe_xml);
 
@@ -107,12 +109,16 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
         socket
             .send_to(probe_xml.as_bytes(), multi_socket_addr)
             .await?;
+        socket
+            .send_to(probe_xml_extra.as_bytes(), multi_socket_addr)
+            .await?;
 
         socket
     };
 
     Ok(stream! {
         let probe = &probe;
+        let probe_extra = &probe_extra;
         let socket = &socket;
 
         let device_list: Arc<Mutex<Vec<Device>>> = Arc::new(Mutex::new(Vec::new()));
@@ -137,7 +143,8 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
                     Ok(envelope) => envelope,
                     Err(_) => return Vec::new(),
                 };
-                if envelope.header.relates_to != probe.header.message_id {
+                if envelope.header.relates_to.ne(&probe.header.message_id) &&
+                    envelope.header.relates_to.ne(&probe_extra.header.message_id) {
                     return Vec::new();
                 }
                 get_responding_addr(envelope, is_addr_responding).await
@@ -200,7 +207,7 @@ where
         .await
 }
 
-fn build_probe() -> probe::Envelope {
+fn build_probe(types: &str) -> probe::Envelope {
     use probe::*;
 
     Envelope {
@@ -211,7 +218,7 @@ fn build_probe() -> probe::Envelope {
         },
         body: Body {
             probe: Probe {
-                types: "dn:NetworkVideoTransmitter".into(),
+                types: types.into(),
                 scopes: "".into(),
             },
         },
