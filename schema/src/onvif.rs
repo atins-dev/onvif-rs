@@ -649,6 +649,14 @@ impl Validate for ViewModes {}
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct VideoEncoderConfiguration {
+    // User readable name. Length up to 64 characters.
+    #[yaserde(prefix = "tt", rename = "Name")]
+    pub name: Name,
+
+    // Number of internal references currently using this configuration.
+    #[yaserde(prefix = "tt", rename = "UseCount")]
+    pub use_count: i32,
+
     // Used video codec, either Jpeg, H.264 or Mpeg4
     #[yaserde(prefix = "tt", rename = "Encoding")]
     pub encoding: VideoEncoding,
@@ -689,14 +697,6 @@ pub struct VideoEncoderConfiguration {
     // configuration values such as bitrate. Default is false.
     #[yaserde(attribute, rename = "GuaranteedFrameRate")]
     pub guaranteed_frame_rate: Option<bool>,
-
-    // User readable name. Length up to 64 characters.
-    #[yaserde(prefix = "tt", rename = "Name")]
-    pub name: Name,
-
-    // Number of internal references currently using this configuration.
-    #[yaserde(prefix = "tt", rename = "UseCount")]
-    pub use_count: i32,
 
     // Token that uniquely references this configuration. Length up to 64
     // characters.
@@ -1115,6 +1115,14 @@ impl Validate for VideoEncodingProfiles {}
 #[derive(Clone, Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct VideoEncoder2Configuration {
+    // User readable name. Length up to 64 characters.
+    #[yaserde(prefix = "tt", rename = "Name")]
+    pub name: Name,
+
+    // Number of internal references currently using this configuration.
+    #[yaserde(prefix = "tt", rename = "UseCount")]
+    pub use_count: i32,
+
     // Video Media Subtype for the video format. For definitions see
     // tt:VideoEncodingMimeNames and
     #[yaserde(prefix = "tt", rename = "Encoding")]
@@ -1156,14 +1164,6 @@ pub struct VideoEncoder2Configuration {
     // configuration values such as bitrate. Default is false.
     #[yaserde(attribute, rename = "GuaranteedFrameRate")]
     pub guaranteed_frame_rate: Option<bool>,
-
-    // User readable name. Length up to 64 characters.
-    #[yaserde(prefix = "tt", rename = "Name")]
-    pub name: Name,
-
-    // Number of internal references currently using this configuration.
-    #[yaserde(prefix = "tt", rename = "UseCount")]
-    pub use_count: i32,
 
     // Token that uniquely references this configuration. Length up to 64
     // characters.
