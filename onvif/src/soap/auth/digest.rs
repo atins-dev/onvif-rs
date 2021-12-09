@@ -68,12 +68,28 @@ impl Digest {
 }
 
 fn digest_auth(res: &reqwest::Response, creds: &Credentials, url: &Url) -> Result<String, Error> {
-    let www_authenticate = res
-        .headers()
-        .get(reqwest::header::WWW_AUTHENTICATE)
-        .ok_or_else(|| Error::Digest("No www-authenticate header".to_string()))?
-        .to_str()
-        .map_err(|e| Error::Digest(e.to_string()))?;
+    let www_auth_headers = res.headers().get_all(reqwest::header::WWW_AUTHENTICATE);
+
+    let mut www_authenticate = None;
+
+    for method in ["algorithm=sha", "algorithm=md5", "digest"] {
+        for www_auth in www_auth_headers.iter() {
+            let header_str = www_auth
+                .to_str()
+                .map_err(|e| Error::Digest(e.to_string()))?;
+            if header_str.to_ascii_lowercase().contains(method) {
+                www_authenticate = Some(header_str);
+                break;
+            }
+        }
+        if www_authenticate.is_some() {
+            break;
+        }
+    }
+
+    let www_authenticate = www_authenticate.ok_or(Error::Digest(
+        "No www-authenticate digest header".to_string(),
+    ))?;
 
     let mut context = digest_auth::AuthContext::new(&creds.username, &creds.password, url.path());
 
