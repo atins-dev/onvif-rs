@@ -240,7 +240,7 @@ impl Client {
                 .and_then(|text| {
                     debug!(self, "Response body: {}", text);
                     soap::unsoap(&text).map_err(|e| match e {
-                        soap::Error::Fault(f) if f.is_unauthorized() => {
+                        soap::Error::Fault(f) if f.is_unauthorized() || f.is_prohibited() => {
                             Error::Authorization("Unauthorized".to_string())
                         }
                         _ => Error::Protocol(format!("{:?}", e)),
