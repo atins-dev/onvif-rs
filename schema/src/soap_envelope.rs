@@ -75,6 +75,13 @@ impl Fault {
             None => false,
         }
     }
+
+    pub fn is_prohibited(&self) -> bool {
+        match self.code.subcode.as_ref() {
+            Some(subcode) => subcode.value.contains("OperationProhibited"),
+            None => false,
+        }
+    }
 }
 
 impl Validate for Fault {}
