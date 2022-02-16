@@ -25,6 +25,8 @@ impl Validate for QueryExpressionType {}
 pub struct TopicExpressionType {
     #[yaserde(attribute, rename = "Dialect")]
     pub dialect: String,
+    #[yaserde(text)]
+    pub value: String,
 }
 
 impl Validate for TopicExpressionType {}
