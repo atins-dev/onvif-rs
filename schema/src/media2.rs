@@ -1017,6 +1017,10 @@ pub struct GetAudioDecoderConfigurationOptionsResponse {
 impl Validate for GetAudioDecoderConfigurationOptionsResponse {}
 
 #[derive(PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(
+    prefix = "tr2",
+    namespace = "tr2: http://www.onvif.org/ver20/media/wsdl"
+)]
 pub enum TransportProtocol {
     RtspUnicast,
     RtspMulticast,
