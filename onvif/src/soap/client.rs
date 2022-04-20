@@ -48,6 +48,7 @@ impl ClientBuilder {
                 credentials: None,
                 auth_type: AuthType::Any,
                 timeout: Duration::from_secs(5),
+                connect_timeout: Duration::from_secs(5),
                 address_to: None,
                 action: None,
             },
@@ -69,12 +70,18 @@ impl ClientBuilder {
         self
     }
 
+    pub fn connect_timeout(mut self, connect_timeout: Duration) -> Self {
+        self.config.connect_timeout = connect_timeout;
+        self
+    }
+
     pub fn build(self) -> Client {
         #[allow(unused_mut)]
         let mut client_builder = reqwest::Client::builder()
             .redirect(reqwest::redirect::Policy::none())
             .http1_title_case_headers()
-            .timeout(self.config.timeout);
+            .timeout(self.config.timeout)
+            .connect_timeout(self.config.connect_timeout);
 
         #[cfg(feature = "tls")]
         {
@@ -99,6 +106,7 @@ struct Config {
     credentials: Option<Credentials>,
     auth_type: AuthType,
     timeout: Duration,
+    connect_timeout: Duration,
     address_to: Option<String>,
     action: Option<String>,
 }
