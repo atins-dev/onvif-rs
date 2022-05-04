@@ -123,7 +123,7 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
 
         let device_list: Arc<Mutex<Vec<Device>>> = Arc::new(Mutex::new(Vec::new()));
 
-        let start = Instant::now();
+        let mut start = Instant::now();
         loop {
             let elapsed = start.elapsed();
             if elapsed >= duration {
@@ -151,12 +151,15 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
             }
             .await;
 
-            for item in try_produce_items.into_iter()
-            {
-                let mut device_list = device_list.lock().await;
-                if device_list.iter().find(|device| *device == &item).is_none() {
-                    device_list.push(item.clone());
-                    yield item;
+            if try_produce_items.len() !=0 {
+                start = Instant::now();
+                for item in try_produce_items.into_iter()
+                {
+                    let mut device_list = device_list.lock().await;
+                    if device_list.iter().find(|device| *device == &item).is_none() {
+                        device_list.push(item.clone());
+                        yield item;
+                    }
                 }
             }
         }
