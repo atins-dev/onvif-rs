@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use schema::transport::{Error, Transport};
 use std::{
     fmt::{Debug, Formatter},
+    sync::{Arc, RwLock},
     time::Duration,
 };
 use url::Url;
@@ -49,8 +50,8 @@ impl ClientBuilder {
                 auth_type: AuthType::Any,
                 timeout: Duration::from_secs(5),
                 connect_timeout: Duration::from_secs(5),
-                address_to: None,
-                action: None,
+                address_to: Arc::new(RwLock::new(None)),
+                action: Arc::new(RwLock::new(None)),
             },
         }
     }
@@ -107,8 +108,8 @@ struct Config {
     auth_type: AuthType,
     timeout: Duration,
     connect_timeout: Duration,
-    address_to: Option<String>,
-    action: Option<String>,
+    address_to: Arc<RwLock<Option<String>>>,
+    action: Arc<RwLock<Option<String>>>,
 }
 
 #[derive(Clone, Debug)]
@@ -200,12 +201,13 @@ impl Client {
             "About to make request. auth_type={:?}, redirections={}", auth_type, redirections
         );
 
-        let address_to = self.config.address_to.clone();
+        let address_to = self.config.address_to.read().unwrap().clone();
         let url = if let Some(address_to) = &address_to {
             address_to
         } else {
             uri.as_str()
         };
+        let action = self.config.action.read().unwrap().clone();
         let mut request = self
             .client
             .post(url)
@@ -219,13 +221,8 @@ impl Client {
             debug!(self, "Digest headers added");
         }
 
-        let soap_msg = soap::soap(
-            message,
-            &username_token,
-            address_to,
-            self.config.action.clone(),
-        )
-        .map_err(|e| Error::Protocol(format!("{:?}", e)))?;
+        let soap_msg = soap::soap(message, &username_token, address_to, action)
+            .map_err(|e| Error::Protocol(format!("{:?}", e)))?;
         debug!(self, "Request body: {}", soap_msg);
 
         let response = request.body(soap_msg).send().await.map_err(|e| match e {
@@ -313,11 +310,11 @@ impl Client {
             .map(|c| UsernameToken::new(&c.username, &c.password))
     }
 
-    pub fn set_address_to(&mut self, address_to: Option<String>) {
-        self.config.address_to = address_to;
+    pub fn set_address_to(&self, address_to: Option<String>) {
+        *self.config.address_to.write().unwrap() = address_to;
     }
 
-    pub fn set_action(&mut self, action: Option<String>) {
-        self.config.action = action;
+    pub fn set_action(&self, action: Option<String>) {
+        *self.config.action.write().unwrap() = action;
     }
 }
