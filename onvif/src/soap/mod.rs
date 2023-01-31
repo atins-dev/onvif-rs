@@ -15,7 +15,7 @@ pub enum Error {
     EnvelopeNotFound,
     BodyNotFound,
     BodyIsEmpty,
-    Fault(soap_envelope::Fault),
+    Fault(Box<soap_envelope::Fault>),
     InternalError(String),
 }
 
@@ -54,25 +54,21 @@ pub fn soap(
     if let Some(address_to) = address_to {
         let mut element_to = parse(&format!(
             r##"<?xml version="1.0" encoding="UTF-8"?>
-                <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">{}</wsa:To>"##,
-            address_to
+                <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">{address_to}</wsa:To>"##
         ))?;
-        element_to.attributes.insert(
-            format!("{}:mustUnderstand", soap_prefix),
-            "true".to_string(),
-        );
+        element_to
+            .attributes
+            .insert(format!("{soap_prefix}:mustUnderstand"), "true".to_string());
         header_elements.push(element_to);
     }
     if let Some(action) = action {
         let mut element_to = parse(&format!(
             r##"<?xml version="1.0" encoding="UTF-8"?>
-                <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">{}</wsa:Action>"##,
-            action
+                <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">{action}</wsa:Action>"##
         ))?;
-        element_to.attributes.insert(
-            format!("{}:mustUnderstand", soap_prefix),
-            "true".to_string(),
-        );
+        element_to
+            .attributes
+            .insert(format!("{soap_prefix}:mustUnderstand"), "true".to_string());
         header_elements.push(element_to);
     }
 
@@ -103,7 +99,7 @@ pub fn unsoap(xml: &str) -> Result<String, Error> {
 
     if let Some(fault) = body.get_child("Fault") {
         let fault = deserialize_fault(fault)?;
-        return Err(Error::Fault(fault));
+        return Err(Error::Fault(Box::new(fault)));
     }
 
     body.children
@@ -116,7 +112,7 @@ pub fn unsoap(xml: &str) -> Result<String, Error> {
 }
 
 fn parse(xml: &str) -> Result<Element, Error> {
-    Element::parse(xml.as_bytes()).map_err(|x| Error::ParseError(x))
+    Element::parse(xml.as_bytes()).map_err(Error::ParseError)
 }
 
 fn xml_element_to_string(el: &Element) -> Result<String, Error> {

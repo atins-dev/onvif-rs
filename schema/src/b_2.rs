@@ -52,15 +52,9 @@ impl Validate for SubscriptionPolicyType {}
 
 pub type TopicExpression = TopicExpressionType;
 
-#[derive(PartialEq, PartialOrd, Debug, UtilsDefaultSerde)]
+#[derive(PartialEq, PartialOrd, Debug, UtilsDefaultSerde, Default)]
 pub struct FixedTopicSet {
     value: bool,
-}
-
-impl Default for FixedTopicSet {
-    fn default() -> FixedTopicSet {
-        Self { value: false }
-    }
 }
 
 impl FromStr for FixedTopicSet {

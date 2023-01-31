@@ -222,7 +222,7 @@ impl Client {
         }
 
         let soap_msg = soap::soap(message, &username_token, address_to, action)
-            .map_err(|e| Error::Protocol(format!("{:?}", e)))?;
+            .map_err(|e| Error::Protocol(format!("{e:?}")))?;
         debug!(self, "Request body: {}", soap_msg);
 
         let response = request.body(soap_msg).send().await.map_err(|e| match e {
@@ -248,7 +248,7 @@ impl Client {
                         soap::Error::Fault(f) if f.is_unauthorized() || f.is_prohibited() => {
                             Error::Authorization("Unauthorized".to_string())
                         }
-                        _ => Error::Protocol(format!("{:?}", e)),
+                        _ => Error::Protocol(format!("{e:?}")),
                     })
                 })
         } else if status == reqwest::StatusCode::UNAUTHORIZED {
