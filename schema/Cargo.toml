@@ -14,6 +14,7 @@ percent-encoding = "2.1.0"
 thiserror = "1.0.23"
 url = "2.2.1"
 xml-rs = "0.8.3"
+roxmltree = "0.18.0"
 xsd-macro-utils = { git = "https://github.com/lumeohq/xsd-parser-rs", rev = "7f3d433" }
 xsd-types = { git = "https://github.com/lumeohq/xsd-parser-rs", rev = "7f3d433" }
 yaserde = "0.7.1"

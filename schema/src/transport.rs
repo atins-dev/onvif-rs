@@ -2,6 +2,8 @@ use async_trait::async_trait;
 use thiserror::Error;
 use yaserde::{YaDeserialize, YaSerialize};
 
+use crate::event::GetEventProperties;
+
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Serialization failed: {0}")]
@@ -44,6 +46,18 @@ pub async fn request<T: Transport, R: YaSerialize, S: YaDeserialize>(
     de(&transport
         .request(&crop_xml_declaration(&ser(request)?))
         .await?)
+}
+
+pub async fn request_event_properties<T: Transport>(
+    transport: &T,
+    request: &GetEventProperties,
+) -> Result<String, Error> {
+    let ser = |obj: &GetEventProperties| yaserde::ser::to_string(obj).map_err(Error::Serialization);
+
+    let response = transport
+        .request(&crop_xml_declaration(&ser(request)?))
+        .await;
+    response
 }
 
 fn crop_xml_declaration(xml: &str) -> String {

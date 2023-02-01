@@ -1,6 +1,7 @@
 use crate::transport;
 use crate::validate::Validate;
 use crate::{b_2 as wsnt, t_1 as wstop, ws_addr as wsa};
+use roxmltree::Node;
 use xsd_types::types as xs;
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
@@ -317,8 +318,37 @@ pub async fn create_pull_point_subscription<T: transport::Transport>(
 pub async fn get_event_properties<T: transport::Transport>(
     transport: &T,
     request: &GetEventProperties,
-) -> Result<GetEventPropertiesResponse, transport::Error> {
-    transport::request(transport, request).await
+) -> Result<Vec<String>, transport::Error> {
+    let str_xml = transport::request_event_properties(transport, request).await?;
+    let doc = roxmltree::Document::parse(&str_xml)
+        .map_err(|err| transport::Error::Deserialization(err.to_string()))?;
+    let topic_set = doc
+        .descendants()
+        .find(|node| node.has_tag_name("TopicSet"))
+        .ok_or_else(|| transport::Error::Other("No data".to_owned()))?;
+
+    let mut events = topic_set
+        .children()
+        .map(|child| collect_events(child, String::default()))
+        .flatten()
+        .collect::<Vec<_>>();
+    events.dedup();
+
+    Ok(events)
+}
+
+fn collect_events(node: Node, path: String) -> Vec<String> {
+    if node.has_tag_name("MessageDescription") {
+        return vec![path];
+    } else {
+        node.children()
+            .map(|child| {
+                let path = format!("{path}/{}", node.tag_name().name());
+                collect_events(child, path)
+            })
+            .flatten()
+            .collect::<Vec<_>>()
+    }
 }
 
 // This method pulls one or more messages from a PullPoint.
