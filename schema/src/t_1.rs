@@ -1,6 +1,7 @@
 use crate::validate::Validate;
 use std::str::FromStr;
 use xsd_macro_utils::*;
+use yaserde::YaDeserialize;
 
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(
@@ -119,7 +120,7 @@ pub struct TopicType {
 
 impl Validate for TopicType {}
 
-#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[derive(Default, PartialEq, Debug, YaSerialize)]
 #[yaserde(
     prefix = "wstop",
     namespace = "wstop: http://docs.oasis-open.org/wsn/t-1"
@@ -127,11 +128,47 @@ impl Validate for TopicType {}
 pub struct TopicSetType {
     #[yaserde(prefix = "wstop", rename = "documentation")]
     pub documentation: Option<Documentation>,
+    pub event_paths: Vec<String>,
 }
 
 impl Validate for TopicSetType {}
 
+impl YaDeserialize for TopicSetType {
+    fn deserialize<R: std::io::Read>(
+        reader: &mut yaserde::de::Deserializer<R>,
+    ) -> Result<Self, String> {
+        let mut ret = Self::default();
+        let mut path = Vec::new();
+
+        loop {
+            match reader.next_event()? {
+                ::yaserde::xml::reader::XmlEvent::StartElement { ref name, .. } => {
+                    path.push(name.local_name.to_string());
+                }
+                xml::reader::XmlEvent::EndElement { ref name } => {
+                    path.pop();
+                    match name.local_name.as_str() {
+                        "TopicSet" => {
+                            break;
+                        }
+                        "MessageDescription" => {
+                            ret.event_paths.push(path[1..].join("/"));
+                            continue;
+                        }
+                        "Documentation" => ret.documentation = Some(Documentation {}),
+                        _ => {}
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        Ok(ret)
+    }
+}
+
 pub type TopicSet = TopicSetType;
+
 // pub type Topic = bool;
 #[derive(Default, PartialEq, Debug, UtilsTupleIo, UtilsDefaultSerde)]
 pub struct FullTopicExpression(pub String);

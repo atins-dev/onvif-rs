@@ -1,5 +1,8 @@
+use std::str::FromStr;
+
 use super::*;
 
+use crate::event::GetEventPropertiesResponse;
 use crate::transport;
 use crate::utils::xml_eq::assert_xml_eq;
 use assert_approx_eq::assert_approx_eq;
@@ -618,4 +621,44 @@ fn extension_inside_extension() {
     "#;
 
     let _ = yaserde::de::from_str::<tt::SecurityCapabilities>(ser).unwrap();
+}
+
+#[test]
+fn event_properties_response_test() {
+    let ser = include_str!("event_response.xml");
+    let de = yaserde::de::from_str::<GetEventPropertiesResponse>(ser).unwrap();
+    assert_eq!(
+        de,
+        GetEventPropertiesResponse {
+            topic_namespace_location: vec![
+                "http://www.onvif.org/onvif/ver10/topics/topicns.xml".to_string()
+            ],
+            fixed_topic_set: b_2::FixedTopicSet::from_str("true").unwrap(),
+            topic_set: t_1::TopicSetType {
+                documentation: None,
+                event_paths: vec![
+                    "VideoAnalytics/Tripzone".to_string(),
+                    "VideoSource/MotionAlarm".to_string(),
+                    "VideoSource/GlobalSceneChange/ImagingService".to_string(),
+                ],
+            },
+            topic_expression_dialect: vec![
+                b_2::TopicExpressionDialect::from_str(
+                    "http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete",
+                )
+                .unwrap(),
+                b_2::TopicExpressionDialect::from_str(
+                    "http://www.onvif.org/ver10/tev/topicExpression/ConcreteSet",
+                )
+                .unwrap(),
+            ],
+            message_content_filter_dialect: vec![
+                "http://www.onvif.org/ver10/tev/messageContentFilter/ItemFilter".to_owned(),
+            ],
+            producer_properties_filter_dialect: vec![],
+            message_content_schema_location: vec![
+                "http://www.onvif.org/onvif/ver10/schema/onvif.xsd".to_owned()
+            ],
+        }
+    );
 }
