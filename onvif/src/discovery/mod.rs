@@ -10,7 +10,7 @@ use std::{
     future::Future,
     iter,
     net::{IpAddr, Ipv4Addr, SocketAddr},
-    sync::Arc,
+    sync::{atomic::AtomicBool, Arc},
 };
 use thiserror::Error;
 use tokio::{
@@ -86,7 +86,10 @@ pub struct Device {
 ///     println!("Devices found: {:?}", devices);
 /// };
 /// ```
-pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, Error> {
+pub async fn discover(
+    duration: Duration,
+    stop: Arc<AtomicBool>,
+) -> Result<impl Stream<Item = Device>, Error> {
     let probe = build_probe("tds:Device");
     let probe_extra = build_probe("dn:NetworkVideoTransmitter");
     let probe_xml = yaserde::ser::to_string(&probe).map_err(Error::Serde)?;
@@ -125,6 +128,10 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
 
         let mut start = Instant::now();
         loop {
+            if stop.load(std::sync::atomic::Ordering::Relaxed) {
+                break;
+            }
+
             let elapsed = start.elapsed();
             if elapsed >= duration {
                 break;
@@ -151,12 +158,12 @@ pub async fn discover(duration: Duration) -> Result<impl Stream<Item = Device>, 
             }
             .await;
 
-            if try_produce_items.len() !=0 {
+            if !try_produce_items.is_empty() {
                 start = Instant::now();
                 for item in try_produce_items.into_iter()
                 {
                     let mut device_list = device_list.lock().await;
-                    if device_list.iter().find(|device| *device == &item).is_none() {
+                    if !device_list.iter().any(|device| device == &item) {
                         device_list.push(item.clone());
                         yield item;
                     }
