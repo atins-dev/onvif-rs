@@ -5160,9 +5160,14 @@ impl Validate for PtzpresetTourSpotExtension {}
 #[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
 #[yaserde(prefix = "tt", namespace = "tt: http://www.onvif.org/ver10/schema")]
 pub struct PtzpresetTourPresetDetail {
-    #[yaserde(prefix = "tt", rename = "PTZPresetTourPresetDetailChoice")]
-    pub ptz_preset_tour_preset_detail_choice:
-        ptz_preset_tour_preset_detail::PtzpresetTourPresetDetailChoice,
+    #[yaserde(prefix = "tt", rename = "PresetToken")]
+    pub preset_token: Option<ReferenceToken>,
+
+    #[yaserde(prefix = "tt", rename = "Home")]
+    pub home: Option<bool>,
+
+    #[yaserde(prefix = "tt", rename = "PTZPosition")]
+    pub ptz_position: Option<Ptzvector>,
 }
 
 impl Validate for PtzpresetTourPresetDetail {}
