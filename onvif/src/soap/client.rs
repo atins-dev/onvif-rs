@@ -4,6 +4,7 @@ use crate::soap::{
 };
 use async_recursion::async_recursion;
 use async_trait::async_trait;
+use reqwest::Response;
 use schema::transport::{Error, Transport};
 use std::{
     fmt::{Debug, Formatter},
@@ -251,7 +252,8 @@ impl Client {
                         _ => Error::Protocol(format!("{e:?}")),
                     })
                 })
-        } else if status == reqwest::StatusCode::UNAUTHORIZED {
+        } else if status.is_client_error() {
+            // NOTE: even if error code is not UNAUTHORIZED(401), try digest
             match auth_type {
                 RequestAuthType::Digest(digest) if !digest.is_failed() => {
                     digest.set_401(response);
