@@ -1,5 +1,5 @@
 extern crate onvif;
-use std::sync::{Arc, atomic::AtomicBool};
+use std::sync::{atomic::AtomicBool, Arc};
 
 use onvif::discovery;
 

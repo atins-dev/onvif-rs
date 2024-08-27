@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use schema::transport::{Error, Transport};
 use std::{
     fmt::{Debug, Formatter},
+    net::IpAddr,
     sync::{Arc, RwLock},
     time::Duration,
 };
@@ -310,7 +311,25 @@ impl Client {
             .map(|c| UsernameToken::new(&c.username, &c.password))
     }
 
-    pub fn set_address_to(&self, address_to: Option<String>) {
+    pub fn set_address_to(&self, mut address_to: Option<String>) {
+        if let Some(ref address) = address_to {
+            if let Ok(url) = Url::parse(address) {
+                if let Some(host) = url.host_str() {
+                    let replace = if let Ok(ip) = host.parse::<IpAddr>() {
+                        ip.is_loopback()
+                    } else {
+                        host == "localhost"
+                    };
+
+                    if replace {
+                        if let Some(config_host) = self.config.uri.host_str() {
+                            address_to = Some(address.replace(host, config_host));
+                        }
+                    }
+                }
+            }
+        }
+
         *self.config.address_to.write().unwrap() = address_to;
     }
 
